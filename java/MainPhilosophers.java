@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 public class MainPhilosophers {
 
     
-    public static final int PHILOSOPHERS = 5;
+    public static final int PHILOSOPHERS = 101;
     
     
     public static void cleanFile() throws IOException{
@@ -20,9 +20,11 @@ public class MainPhilosophers {
         
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Philosopher[] philosophers = new Philosopher[PHILOSOPHERS];
         Object[] forks = new Object[PHILOSOPHERS]; // the number of forsks is the same of philosophers
+        Thread[] threads = new Thread[PHILOSOPHERS];
+        
         try {
             cleanFile();
         } catch (IOException ex) {
@@ -51,9 +53,15 @@ public class MainPhilosophers {
             else{
                 philosophers[i] = new Philosopher(rightForkLock, leftForkLock);
             }             
-            Thread t = new Thread(philosophers[i], "Philosopher " + (i + 1));
-            t.start();
+            threads[i] = new Thread(philosophers[i], "Philosopher " + (i + 1));
+            threads[i].start();
         }
+        
+        for(int i = 0; i < PHILOSOPHERS; i++){
+            threads[i].join();
+        }
+        
+        Analizer.analizeReport();
         
     }
     

@@ -14,8 +14,10 @@ public class Philosopher implements Runnable{
     
     private Object leftForkLock;
     private Object rightForkLock;
-    private final int SLEEP_MULTIPLIER = 1000;
+    private final int SLEEP_MULTIPLIER = 100;
     public static final String outFileName = "eaters_report.txt";
+    public static final int TIME_TO_RUN = 120; // time for each philosopher to run in seconds
+    
     
     public Philosopher(Object leftLock, Object rightLock){
         this.leftForkLock = leftLock;
@@ -48,7 +50,9 @@ public class Philosopher implements Runnable{
     
     @Override
     public void run() {
-       while (true) {
+        long beg = System.currentTimeMillis();
+        long end = beg;
+        while ((end - beg) / 1000 <= TIME_TO_RUN) {
            try {
                //thinking
                
@@ -68,6 +72,7 @@ public class Philosopher implements Runnable{
            } catch (IOException ex) {
               Logger.getLogger(Philosopher.class.getName()).log(Level.SEVERE, null, ex);
            }
+           end = System.currentTimeMillis();
        }
     }
 
