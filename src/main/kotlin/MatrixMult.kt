@@ -1,56 +1,57 @@
 import kotlinx.coroutines.*
+import kotlin.random.Random
+import kotlin.system.measureTimeMillis
+
 import java.io.File
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.CountDownLatch
-import kotlin.random.Random
-import kotlin.system.measureTimeMillis
 
-fun main() {
+suspend fun main() { // main() has to be a suspend function so we can call join() from it
+    val n = 1024
+    val p = 8
+    val q = n/p
+    val jobs: MutableList<Job> = mutableListOf()
+    val matrix1 = randMatrix(n)
+    val matrix2 = randMatrix(n)
+
+    // creation of files:
     val dateFormat = SimpleDateFormat("dd-MM-yyyy_hh-mm-ss_zzz")
     val date = dateFormat.format(Date())
     val path = Paths.get("").toAbsolutePath().toString()+"\\matrices\\"
-    val n = 128
-    val p = 8
-    val q = n/p
-    val matrix1 = randMatrix(n)
     matrixToFile(path+date+"_matrix1.txt", matrix1)
-    val matrix2 = randMatrix(n)
     matrixToFile(path+date+"_matrix2.txt", matrix2)
-    val ansParallel = Array(n) {LongArray(n)} //creates array of n LongArrays, each of size n
-    val ansSequential = Array(n) {LongArray(n)}
-    val latch = CountDownLatch(p)
 
+    val ansParallel = Array(n) {LongArray(n)} //creates array of n LongArrays, each of size n
     var duration = measureTimeMillis {
-        for (i in 0 until p) {
-            GlobalScope.launch {
+        for (i in 0 until p) {      // botar runBlocking antes dessa linha pra testar oq eu disse abaixo!
+            jobs += GlobalScope.launch{ // se fizéssemos runBlocking e dentro dele um for de launch, sem o globalscope, cada coroutine estaria no escopo desse runBlocking e, portanto, terminariam de executar, mas não estariam em paralelo. Se usarmos o GlobalScope dentro de um runBlocking, entretanto, elas não estarão no escopo dele e serão paralelas; contudo, o runBlocking não irá esperar elas terminarem de executar, irá apenas esperar cada coroutine ser criada pelo for do runBlocking.
                 /** comment line below when benchmarking **/
-                //println("Começou thread $i")
+                println("Começou thread $i")
                 /** comment this line when benchmarking **/
                 /** comment line above when benchmarking **/
 
                 mult(matrix1, matrix2, ansParallel, i, q)
 
                 /** comment line below when benchmarking **/
-                //println("Terminou thread $i")
+                println("Terminou thread $i")
                 /** comment this line when benchmarking **/
                 /** comment line above when benchmarking **/
-                latch.countDown()
             }
         }
-        latch.await()
+        for ((jobs_index, job) in jobs.withIndex()) {
+            job.join()
+            println("Job $jobs_index executed join().")
+        }
     }
-    var timeElapsed = duration/1000.0
-    println("Multiplicação de matrizes paralela realizada em $timeElapsed segundos.")
+    println("Multiplicação de matrizes paralela realizada em ${duration/1000.0} segundos.")
     matrixToFile(path+date+"_parallel_ans.txt", ansParallel)
 
+    val ansSequential = Array(n) {LongArray(n)}
     duration = measureTimeMillis {
         seqMult(matrix1, matrix2, ansSequential)
     }
-    timeElapsed = duration/1000.0
-    println("")
-    println("Multiplicação de matrizes sequencial realizada em $timeElapsed segundos.")
+    println("Multiplicação de matrizes sequencial realizada em ${duration/1000.0} segundos.")
     matrixToFile(path+date+"_sequential_ans.txt", ansSequential)
 }
 
