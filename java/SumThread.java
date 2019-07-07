@@ -24,7 +24,7 @@ public class SumThread extends Thread{
         int sumsToRun = Math.max(sums / p, 1);
         for (int i = 0; i < sumsToRun; i++){
             int index = this.id*sumsToRun + i;
-            Arr[index] = Arr[2*index] + Arr[2*index] + 1; 
+            Arr[index] = Arr[2*index] + Arr[2*index + 1]; 
         }
     }
     
