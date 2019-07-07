@@ -1,13 +1,14 @@
 import kotlinx.coroutines.*
-import java.io.File
-import java.nio.file.Paths
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.math.log2
 import kotlin.math.*
 import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 import kotlin.Pair
+
+//libraries for file manipulation
+import java.io.File
+import java.nio.file.Paths
+import java.text.SimpleDateFormat
+import java.util.*
 
 suspend fun main() {
     val n = 2048 // has to be a power of 2
@@ -56,10 +57,9 @@ suspend fun main() {
 
 fun sum(h: Int, arr: LongArray, id: Int, n: Int, p: Int): MutableList<Pair<Int, Long>>{
     val ans = mutableListOf<Pair<Int, Long>>()
-
     val sums = n / 2.toDouble().pow(1+h).toInt()
-
     val sumsToRun = max(sums / p, 1)
+
     for (i in 0 until sumsToRun) {
         val index = id * sumsToRun + i
         ans.add(Pair(index, arr[2*index] + arr[2*index + 1]))

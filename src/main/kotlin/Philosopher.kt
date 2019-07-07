@@ -1,10 +1,13 @@
 import kotlinx.coroutines.*
+
+//libraries for file and time manipulation
 import java.io.File
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
+//library for Dispatcher creation
+import java.util.concurrent.Executors
 
-@ObsoleteCoroutinesApi
 suspend fun main() {
     val philosophers = 101
     val jobs: MutableList<Job> = mutableListOf()
@@ -12,7 +15,7 @@ suspend fun main() {
     val dateFormat = SimpleDateFormat("dd-MM-yyyy_hh-mm-ss_zzz")
     val date = dateFormat.format(Date())
     val path = Paths.get("").toAbsolutePath().toString()+"\\philosophers\\"
-    val pool = newFixedThreadPoolContext(philosophers, name="Pool-")
+    val pool = Executors.newFixedThreadPool(philosophers).asCoroutineDispatcher()
 
     for (i in 0 until philosophers) {
         jobs += GlobalScope.launch(pool){
