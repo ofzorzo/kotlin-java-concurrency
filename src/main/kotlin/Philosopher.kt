@@ -28,6 +28,8 @@ suspend fun main() {
         println("Job $jobs_index executed join().")
     }
     pool.close()
+
+    analyzer(path+date+"_philosophers.txt", philosophers)
 }
 
 fun think(fileName: String, id: Int, forks: BooleanArray){
@@ -51,5 +53,16 @@ fun think(fileName: String, id: Int, forks: BooleanArray){
             }
         }
         end = System.currentTimeMillis()
+    }
+}
+
+fun analyzer(fileName: String, philosophers: Int){
+    val myfile = File(fileName)
+    val timesAteArray = IntArray(philosophers) {0}
+    myfile.forEachLine {
+        timesAteArray[it.split(' ')[1].toInt()] += 1
+    }
+    for((philosopher, timesAte) in timesAteArray.withIndex()){
+        println("Philosopher $philosopher ate $timesAte times.")
     }
 }

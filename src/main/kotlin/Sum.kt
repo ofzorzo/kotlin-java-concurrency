@@ -28,6 +28,7 @@ suspend fun main() {
         seqAns = seqSum(arr)
     }
     println("Soma de elementos sequencial realizada em ${duration/1000.0} segundos.")
+
     duration = measureTimeMillis {
         while (nivel < logN) {
             val threadsToRun = min(p.toFloat(), n / (2).toFloat().pow(nivel+1)).toInt()

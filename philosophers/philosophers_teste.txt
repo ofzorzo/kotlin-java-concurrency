@@ -1,0 +1,5 @@
+Philosopher 2
+Philosopher 1
+Philosopher 2
+Philosopher 1
+Philosopher 1
