@@ -1,4 +1,8 @@
 import kotlinx.coroutines.*
+import java.io.File
+import java.nio.file.Paths
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.log2
 import kotlin.math.*
 import kotlin.random.Random
@@ -12,16 +16,19 @@ suspend fun main() {
     val logN = log2(n.toDouble()).toInt()
     var nivel = 0
     var seqAns: Long = 0
-    println("")
+
+    //file creation:
+    val dateFormat = SimpleDateFormat("dd-MM-yyyy_hh-mm-ss_zzz")
+    val date = dateFormat.format(Date())
+    val path = Paths.get("").toAbsolutePath().toString()+"\\sumArrays\\"
+    arrToFile(path+date+"_sumArray.txt", arr)
+
     var duration = measureTimeMillis {
         seqAns = seqSum(arr)
     }
     println("Soma de elementos sequencial realizada em ${duration/1000.0} segundos.")
     duration = measureTimeMillis {
         while (nivel < logN) {
-            //printArr(arr)
-            //println("")
-            //println("Nivel: $nivel")
             val threadsToRun = min(p.toFloat(), n / (2).toFloat().pow(nivel+1)).toInt()
             val jobs: MutableList<Deferred<MutableList<Pair<Int, Long>>>> = mutableListOf()
             for (i in 0 until threadsToRun) {
@@ -39,10 +46,7 @@ suspend fun main() {
             for (pair in results) {
                 arr[pair.first] = pair.second
             }
-            //printArr(arr)
-            //println("")
             nivel += 1
-            //println("------------------")
         }
     }
     println("Soma de elementos paralela realizada em ${duration/1000.0} segundos.")
@@ -77,6 +81,16 @@ fun randArr(n: Int): LongArray {
         arr[i] = Random.nextLong(1, 15) // values from 1 to RANGE
     }
     return arr
+}
+
+fun arrToFile(fileName: String, arr: LongArray){
+    val myfile = File(fileName)
+
+    myfile.printWriter().use { out ->
+        for(num in arr) {
+            out.print("$num ")
+        }
+    }
 }
 
 fun printArr(arr: LongArray){

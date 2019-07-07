@@ -35,7 +35,7 @@ public class Philosopher implements Runnable{
     }
     
     private void putForkDown(String fork) throws InterruptedException {
-        System.out.println(Thread.currentThread().getName() + " putted " + fork + " fork down");
+        System.out.println(Thread.currentThread().getName() + " put " + fork + " fork down");
         Thread.sleep((long) (Math.random() * this.SLEEP_MULTIPLIER));
     }
     
