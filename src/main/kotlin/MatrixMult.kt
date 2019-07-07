@@ -28,14 +28,12 @@ suspend fun main() { // main() has to be a suspend function so we can call join(
             jobs += GlobalScope.launch{ // se fizéssemos runBlocking e dentro dele um for de launch, sem o globalscope, cada coroutine estaria no escopo desse runBlocking e, portanto, terminariam de executar, mas não estariam em paralelo. Se usarmos o GlobalScope dentro de um runBlocking, entretanto, elas não estarão no escopo dele e serão paralelas; contudo, o runBlocking não irá esperar elas terminarem de executar, irá apenas esperar cada coroutine ser criada pelo for do runBlocking.
                 /** comment line below when benchmarking **/
                 println("Começou thread $i")
-                /** comment this line when benchmarking **/
                 /** comment line above when benchmarking **/
 
                 mult(matrix1, matrix2, ansParallel, i, q)
 
                 /** comment line below when benchmarking **/
                 println("Terminou thread $i")
-                /** comment this line when benchmarking **/
                 /** comment line above when benchmarking **/
             }
         }
