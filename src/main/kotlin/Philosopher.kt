@@ -7,9 +7,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 //library for Dispatcher creation
 import java.util.concurrent.Executors
+import kotlin.math.sqrt
 
 suspend fun main() {
-    val philosophers = 101
+    val philosophers = 625
     val jobs: MutableList<Job> = mutableListOf()
     val forks = BooleanArray(philosophers) {false}
     val dateFormat = SimpleDateFormat("dd-MM-yyyy_hh-mm-ss_zzz")
@@ -34,7 +35,7 @@ suspend fun main() {
 
 fun think(fileName: String, id: Int, forks: BooleanArray){
     val myfile = File(fileName)
-    val timeToRun = 12
+    val timeToRun = 120
     val beg = System.currentTimeMillis()
     var end = beg
     while ((end - beg) / 1000 <= timeToRun) {
@@ -65,4 +66,12 @@ fun analyzer(fileName: String, philosophers: Int){
     for((philosopher, timesAte) in timesAteArray.withIndex()){
         println("Philosopher $philosopher ate $timesAte times.")
     }
+    val AvgAte = timesAteArray.average()
+    var diffs = 0.0
+    for (ate in timesAteArray) {
+        diffs += ((ate - AvgAte) * (ate - AvgAte))
+    }
+    diffs/=timesAteArray.size
+    diffs = sqrt(diffs)
+    println("Average ate = $AvgAte ; Std dev = $diffs")
 }
