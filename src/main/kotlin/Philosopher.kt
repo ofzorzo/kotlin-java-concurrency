@@ -34,7 +34,7 @@ suspend fun main() {
 
 fun think(fileName: String, id: Int, forks: BooleanArray){
     val myfile = File(fileName)
-    val timeToRun = 120
+    val timeToRun = 12
     val beg = System.currentTimeMillis()
     var end = beg
     while ((end - beg) / 1000 <= timeToRun) {

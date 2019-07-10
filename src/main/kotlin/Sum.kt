@@ -11,61 +11,58 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 suspend fun main() {
-    val n = 2048 // has to be a power of 2
+    val n = 67108864 // has to be a power of 2
     val p = 8
     val arr = randArr(n)
+    val ans = LongArray(n)
     val logN = log2(n.toDouble()).toInt()
     var nivel = 0
-    var seqAns: Long = 0
+    //var seqAns: Long = 0
 
     //file creation:
-    val dateFormat = SimpleDateFormat("dd-MM-yyyy_hh-mm-ss_zzz")
-    val date = dateFormat.format(Date())
-    val path = Paths.get("").toAbsolutePath().toString()+"\\sumArrays\\"
-    arrToFile(path+date+"_sumArray.txt", arr)
-
+    //val dateFormat = SimpleDateFormat("dd-MM-yyyy_hh-mm-ss_zzz")
+    //val date = dateFormat.format(Date())
+    //val path = Paths.get("").toAbsolutePath().toString()+"\\sumArrays\\"
+    //arrToFile(path+date+"_sumArray.txt", arr)
+    /*
     var duration = measureTimeMillis {
         seqAns = seqSum(arr)
     }
-    println("Soma de elementos sequencial realizada em ${duration/1000.0} segundos.")
 
-    duration = measureTimeMillis {
+    */
+    //println("Soma de elementos sequencial realizada em ${duration/1000.0} segundos.")
+
+    var duration = measureTimeMillis {
         while (nivel < logN) {
             val threadsToRun = min(p.toFloat(), n / (2).toFloat().pow(nivel+1)).toInt()
-            val jobs: MutableList<Deferred<MutableList<Pair<Int, Long>>>> = mutableListOf()
+            val jobs: MutableList<Job> = mutableListOf()
             for (i in 0 until threadsToRun) {
-                jobs += GlobalScope.async {
-                    sum(nivel, arr, i, n, p)
+                jobs += GlobalScope.launch {
+                    sum(nivel, arr, ans, i, n, p)
                 }
             }
             val results: MutableList<Pair<Int, Long>> = mutableListOf()
             for (job in jobs) {
-                val result = job.await()
-                for (pair in result) {
-                    results.add(pair)
-                }
+                job.join()
             }
-            for (pair in results) {
-                arr[pair.first] = pair.second
+            for (i in 0 until n) {
+                arr[i] = ans[i]
             }
             nivel += 1
         }
     }
     println("Soma de elementos paralela realizada em ${duration/1000.0} segundos.")
-    println("Resultado sequencial: $seqAns")
+    //println("Resultado sequencial: $seqAns")
     println("Resultado paralelo: ${arr[0]}")
 }
-
-fun sum(h: Int, arr: LongArray, id: Int, n: Int, p: Int): MutableList<Pair<Int, Long>>{
-    val ans = mutableListOf<Pair<Int, Long>>()
+fun sum(h: Int, arr: LongArray, ans:LongArray, id: Int, n: Int, p: Int){
     val sums = n / 2.toDouble().pow(1+h).toInt()
     val sumsToRun = max(sums / p, 1)
 
     for (i in 0 until sumsToRun) {
         val index = id * sumsToRun + i
-        ans.add(Pair(index, arr[2*index] + arr[2*index + 1]))
+        ans[index] = arr[2*index] + arr[2*index + 1]
     }
-    return ans
 }
 
 fun seqSum(arr: LongArray): Long{

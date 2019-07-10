@@ -9,49 +9,51 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 suspend fun main() { // main() has to be a suspend function so we can call join() from it
-    val n = 1024
-    val p = 8
+    val n = 2048
+    val p = 64
     val q = n/p
     val jobs: MutableList<Job> = mutableListOf()
     val matrix1 = randMatrix(n)
     val matrix2 = randMatrix(n)
 
     // creation of files:
-    val dateFormat = SimpleDateFormat("dd-MM-yyyy_hh-mm-ss_zzz")
-    val date = dateFormat.format(Date())
-    val path = Paths.get("").toAbsolutePath().toString()+"\\matrices\\"
-    matrixToFile(path+date+"_matrix1.txt", matrix1)
-    matrixToFile(path+date+"_matrix2.txt", matrix2)
+    //val dateFormat = SimpleDateFormat("dd-MM-yyyy_hh-mm-ss_zzz")
+    //val date = dateFormat.format(Date())
+    //val path = Paths.get("").toAbsolutePath().toString()+"\\matrices\\"
+    //matrixToFile(path+date+"_matrix1.txt", matrix1)
+    //matrixToFile(path+date+"_matrix2.txt", matrix2)
 
     val ansParallel = Array(n) {LongArray(n)} //creates array of n LongArrays, each of size n
     var duration = measureTimeMillis {
         for (i in 0 until p) {      // botar runBlocking antes dessa linha pra testar oq eu disse abaixo!
             jobs += GlobalScope.launch{ // se fizéssemos runBlocking e dentro dele um for de launch, sem o globalscope, cada coroutine estaria no escopo desse runBlocking e, portanto, terminariam de executar, mas não estariam em paralelo. Se usarmos o GlobalScope dentro de um runBlocking, entretanto, elas não estarão no escopo dele e serão paralelas; contudo, o runBlocking não irá esperar elas terminarem de executar, irá apenas esperar cada coroutine ser criada pelo for do runBlocking.
                 /** comment line below when benchmarking **/
-                println("Começou thread $i")
+                //println("Começou thread $i")
                 /** comment line above when benchmarking **/
 
                 mult(matrix1, matrix2, ansParallel, i, q)
 
                 /** comment line below when benchmarking **/
-                println("Terminou thread $i")
+                //println("Terminou thread $i")
                 /** comment line above when benchmarking **/
             }
         }
         for ((jobs_index, job) in jobs.withIndex()) {
             job.join()
-            println("Job $jobs_index executed join().")
+            //println("Job $jobs_index executed join().")
         }
     }
     println("Multiplicação de matrizes paralela realizada em ${duration/1000.0} segundos.")
-    matrixToFile(path+date+"_parallel_ans.txt", ansParallel)
+    //matrixToFile(path+date+"_parallel_ans.txt", ansParallel)
 
+    /**
     val ansSequential = Array(n) {LongArray(n)}
     duration = measureTimeMillis {
         seqMult(matrix1, matrix2, ansSequential)
     }
-    println("Multiplicação de matrizes sequencial realizada em ${duration/1000.0} segundos.")
-    matrixToFile(path+date+"_sequential_ans.txt", ansSequential)
+    **/
+    //println("Multiplicação de matrizes sequencial realizada em ${duration/1000.0} segundos.")
+    //matrixToFile(path+date+"_sequential_ans.txt", ansSequential)
 }
 
 fun mult(matrix1: Array<LongArray>, matrix2: Array<LongArray>, ans: Array<LongArray>, id: Int, q: Int){
