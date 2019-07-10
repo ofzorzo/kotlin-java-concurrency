@@ -11,8 +11,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 suspend fun main() {
-    val n = 67108864 // has to be a power of 2
-    val p = 8
+    val n = 33554432 // has to be a power of 2
+    val p = 32
     val arr = randArr(n)
     val ans = LongArray(n)
     val logN = log2(n.toDouble()).toInt()

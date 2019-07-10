@@ -10,7 +10,7 @@ import java.util.concurrent.Executors
 import kotlin.math.sqrt
 
 suspend fun main() {
-    val philosophers = 625
+    val philosophers = 5
     val jobs: MutableList<Job> = mutableListOf()
     val forks = BooleanArray(philosophers) {false}
     val dateFormat = SimpleDateFormat("dd-MM-yyyy_hh-mm-ss_zzz")
